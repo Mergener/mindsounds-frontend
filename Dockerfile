@@ -1,8 +1,8 @@
 FROM node:lts-alpine as builder
+RUN npm install -g typescript
 WORKDIR /app
 COPY . /app
-RUN npm install -g typescript
-RUN tsc --build tsconfig.json
+RUN tsc --build ./tsconfig.json
 
 FROM nginx:alpine
 

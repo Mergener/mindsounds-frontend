@@ -1,4 +1,4 @@
-import { environment } from "./environment";
+import { environment } from "./environment.js";
 
 export type HTTPMethod =
   | "GET"
@@ -10,6 +10,11 @@ export type HTTPMethod =
   | "HEAD"
   | "CONNECT"
   | "TRACE";
+
+export type HTTPResponse<T> = {
+  status: number;
+  body: T;
+}
 
 export class HTTP {
   constructor(
@@ -30,7 +35,7 @@ export class HTTP {
     url: string,
     headers: Record<string, string> = {},
     body?: any
-  ): Promise<T> {
+  ): Promise<HTTPResponse<T>> {
     const response = await fetch(this._baseUrl + url, {
       method,
       headers: {
@@ -44,10 +49,13 @@ export class HTTP {
       throw new Error(response.statusText);
     }
 
-    return response.json();
+    return {
+      status: response.status,
+      body: (await response.json()) as T,
+    }
   }
 
-  async get<T>(url: string, headers: Record<string, string> = {}): Promise<T> {
+  async get<T>(url: string, headers: Record<string, string> = {}): Promise<HTTPResponse<T>> {
     return this.request<T>("GET", url, headers);
   }
 
@@ -55,7 +63,7 @@ export class HTTP {
     url: string,
     body: any,
     headers: Record<string, string> = {}
-  ): Promise<T> {
+  ): Promise<HTTPResponse<T>> {
     return this.request<T>("POST", url, {
       "Content-Type": "application/json",
       ...headers,
@@ -66,7 +74,7 @@ export class HTTP {
     url: string,
     body: any,
     headers: Record<string, string> = {}
-  ): Promise<T> {
+  ): Promise<HTTPResponse<T>> {
     return this.request<T>("PUT", url, {
       "Content-Type": "application/json",
       ...headers,

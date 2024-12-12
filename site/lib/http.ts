@@ -1,4 +1,11 @@
+import { logout, refreshToken } from "./auth.js";
 import { environment } from "./environment.js";
+
+export class ApiError extends Error {
+  constructor(public status: number, public message: string) {
+    super(message);
+  }
+}
 
 export type HTTPMethod =
   | "GET"
@@ -14,20 +21,32 @@ export type HTTPMethod =
 export type HTTPResponse<T> = {
   status: number;
   body: T;
-}
+};
 
 export class HTTP {
   constructor(
-    private _baseUrl: string = environment.apiUrl,
-    private _headers: Record<string, string> = {}
-  ) {}
+    private _opts: {
+      baseUrl?: string;
+      headers?: Record<string, string>;
+      throwOnFailure?: boolean;
+      autoRetryLogin?: boolean;
+    } = {}
+  ) {
+    this._opts = {
+      baseUrl: environment.apiUrl,
+      headers: {},
+      throwOnFailure: true,
+      autoRetryLogin: true,
+      ..._opts,
+    };
+  }
 
   get headers() {
-    return this._headers;
+    return this._opts.headers || {};
   }
 
   set headers(headers: Record<string, string>) {
-    this._headers = headers;
+    this._opts.headers = headers;
   }
 
   private async request<T>(
@@ -36,26 +55,43 @@ export class HTTP {
     headers: Record<string, string> = {},
     body?: any
   ): Promise<HTTPResponse<T>> {
-    const response = await fetch(this._baseUrl + url, {
+    if (!url.endsWith("/")) {
+      url += "/";
+    }
+
+    const response = await fetch(this._opts.baseUrl + url, {
       method,
       headers: {
-        ...this._headers,
+        ...this._opts.headers,
         ...headers,
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
 
-    if (!response.ok) {
-      throw new Error(response.statusText);
+    if (response.status === 401 && this._opts.autoRetryLogin) {
+      try {
+        await refreshToken();
+        return this.request(method, url, headers, body);
+      } catch (err) {
+        alert("Your session has expired. Please log in again.");
+        logout();
+      }
+    }
+
+    if (response.status >= 400 && this._opts.throwOnFailure) {
+      throw new ApiError(response.status, (await response.json()).detail);
     }
 
     return {
       status: response.status,
       body: (await response.json()) as T,
-    }
+    };
   }
 
-  async get<T>(url: string, headers: Record<string, string> = {}): Promise<HTTPResponse<T>> {
+  async get<T>(
+    url: string,
+    headers: Record<string, string> = {}
+  ): Promise<HTTPResponse<T>> {
     return this.request<T>("GET", url, headers);
   }
 
@@ -64,10 +100,15 @@ export class HTTP {
     body: any,
     headers: Record<string, string> = {}
   ): Promise<HTTPResponse<T>> {
-    return this.request<T>("POST", url, {
-      "Content-Type": "application/json",
-      ...headers,
-    }, body);
+    return this.request<T>(
+      "POST",
+      url,
+      {
+        "Content-Type": "application/json",
+        ...headers,
+      },
+      body
+    );
   }
 
   async put<T>(
@@ -75,9 +116,21 @@ export class HTTP {
     body: any,
     headers: Record<string, string> = {}
   ): Promise<HTTPResponse<T>> {
-    return this.request<T>("PUT", url, {
-      "Content-Type": "application/json",
-      ...headers,
-    }, body);
+    return this.request<T>(
+      "PUT",
+      url,
+      {
+        "Content-Type": "application/json",
+        ...headers,
+      },
+      body
+    );
+  }
+
+  async delete<T>(
+    url: string,
+    headers: Record<string, string> = {}
+  ): Promise<HTTPResponse<T>> {
+    return this.request<T>("DELETE", url, headers);
   }
 }

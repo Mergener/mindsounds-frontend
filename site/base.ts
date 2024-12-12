@@ -1,17 +1,16 @@
 import { isLoggedIn } from "./lib/auth.js";
+import { processPathName } from "./lib/utils.js";
 
-const allowedLoggedOutPages = [
-  "/login.html",
-  "/register.html",
-  "/welcome.html",
-];
+const allowedLoggedOutPages = ["/login", "/register", "/welcome"];
 
 if (!isLoggedIn()) {
   if (location.pathname === "/") {
-    location.href = "/welcome.html";
-  } else if (!allowedLoggedOutPages.includes(location.pathname)) {
+    location.href = "/welcome";
+  } else if (
+    !allowedLoggedOutPages.includes(processPathName(location.pathname))
+  ) {
     alert("You must be logged in to view this page.");
-    location.href = "/welcome.html";
+    location.href = "/welcome";
   }
 } else {
   if (location.pathname === "/") {

@@ -1,0 +1,65 @@
+html {
+  font-size: medium;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.page-bg {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 18px;
+  background: #e5dcf3;
+  background-repeat: no-repeat;
+  background-size: cover; 
+  height: 100%;
+  margin: 0;
+}
+
+.navbar {
+  background: #111111;
+}
+
+.logo {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 135%;
+  text-align: center;
+  font-weight: lighter;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.feed {
+  text-align: center;
+}
+
+.center {
+  text-align: center;
+}
+
+.no-link {
+  text-decoration: none;
+}
+
+.delete-post {
+  font-size: small
+}
+
+.post-date {
+  font-size: x-small;
+}
+
+nav {
+  text-align: center; 
+  margin-top: 20px; 
+}
+
+nav a {
+  text-decoration: none;
+  color: #e0e0e0; 
+  margin: 0 10px;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}

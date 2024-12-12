@@ -1,17 +1,23 @@
 import { HTTP } from "./http.js";
 
-const http = new HTTP();
+const http = new HTTP({ autoRetryLogin: false });
 
 export type LoginResponse = {
   access: string;
   refresh: string;
 };
 
+export function getLoggedUsername(): string | null {
+  return localStorage.getItem("loggedUsername");
+}
+
 export function logIn(username: string, password: string) {
   return http
     .post<LoginResponse>("/login", { username, password })
     .then((res) => {
       localStorage.setItem("authToken", res.body.access);
+      localStorage.setItem("refreshToken", res.body.refresh);
+      localStorage.setItem("loggedUsername", username);
       return res;
     });
 }
@@ -31,7 +37,25 @@ export function register(email: string, username: string, password: string) {
     });
 }
 
+export function refreshToken() {
+  return http
+    .post<LoginResponse>("/refresh-token", {
+      refresh: localStorage.getItem("refreshToken"),
+    })
+    .then((res) => {
+      localStorage.setItem("authToken", res.body.access);
+      return res;
+    });
+}
+
 export function isLoggedIn(): boolean {
   const token = localStorage.getItem("authToken");
   return !!token;
+}
+
+export function logout() {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("loggedUsername");
+  document.location.href = "/";
 }

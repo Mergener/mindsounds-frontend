@@ -11,6 +11,6 @@ export type User = {
   profile: Profile;
 };
 
-export function getUser(id: number) {
-  return http.get<User>(`/users/${id}`).then((res) => res.body);
+export function searchUsers(query: string) {
+  return http.get<User[]>(`/profiles/search?q=${query}`).then((res) => res.body);
 }

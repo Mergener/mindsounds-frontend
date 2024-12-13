@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="styles.css" />
     <title>Login</title>
   </head>
-  <body>
+  <body><div id="navbar" class="navbar"></div>
+<script type="module" src="./navbar.js"></script>
     <div class="center">
       <form id="loginForm">
         <label for="username">User name:</label><br />
@@ -15,6 +16,10 @@
         <input type="password" id="password" name="password" /><br /><br />
         <input type="submit" value="Submit" />
       </form>
+    </div>
+    <div class="center">
+      <p>Forgot your password?</p>
+      <a href="/reset-password">Reset Password</button>
     </div>
     <script src="./login.js" type="module"></script>
   </body>

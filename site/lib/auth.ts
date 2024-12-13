@@ -59,3 +59,23 @@ export function logout() {
   localStorage.removeItem("loggedUsername");
   document.location.href = "/";
 }
+
+export function makeForgotPasswordRequest() {
+  return http.post("/forgot-password", {});
+}
+
+export function resetPassword(email: string) {
+  return http.post("/reset-password", { email });
+}
+
+export function confirmResetPassword(
+  base64uid: string,
+  token: string,
+  password: string
+) {
+  return http.post("/confirm-reset-password", {
+    uid: base64uid,
+    token,
+    new_password: password,
+  });
+}

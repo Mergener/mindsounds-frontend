@@ -65,7 +65,7 @@ export class HTTP {
         ...this._opts.headers,
         ...headers,
       },
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body
     });
 
     if (response.status === 401 && this._opts.autoRetryLogin) {
@@ -107,6 +107,21 @@ export class HTTP {
         "Content-Type": "application/json",
         ...headers,
       },
+      JSON.stringify(body)
+    );
+  }
+
+  async postMultipart<T>(
+    url: string,
+    body: any,
+    headers: Record<string, string> = {}
+  ): Promise<HTTPResponse<T>> {
+    return this.request<T>(
+      "POST",
+      url,
+      {
+        ...headers,
+      },
       body
     );
   }
@@ -123,7 +138,23 @@ export class HTTP {
         "Content-Type": "application/json",
         ...headers,
       },
-      body
+      JSON.stringify(body)
+    );
+  }
+
+  async patch<T>(
+    url: string,
+    body: any,
+    headers: Record<string, string> = {}
+  ): Promise<HTTPResponse<T>> {
+    return this.request<T>(
+      "PATCH",
+      url,
+      {
+        "Content-Type": "application/json",
+        ...headers,
+      },
+      JSON.stringify(body)
     );
   }
 

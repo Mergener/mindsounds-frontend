@@ -24,7 +24,7 @@ document.getElementById("registerForm")?.addEventListener("submit", (e) => {
 
   register(email, username, password)
     .then(() => {
-      location.href = "/home.html";
+      location.href = "/";
     })
     .catch((err) => {
       alert(err.message);

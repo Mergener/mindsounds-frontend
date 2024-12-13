@@ -1,30 +1,41 @@
 import { getLoggedUsername } from "../lib/auth.js";
 import { deletePost, Post } from "../lib/posts.js";
-import { renderMention, renderProfilePicture } from "./profiles.js";
+import {
+  renderProfileLink,
+  renderProfilePicture,
+  getProfileLinkTag,
+} from "./profiles.js";
 
 function processPostContentMentions(content: string): string {
-  return content.replace(/@(\w+)/g, "<a href='/profile?id=$1'>@$1</a>");
+  const matches = content.match(/@(\w+)/g);
+  if (!matches) return content;
+
+  matches.forEach((match) => {
+    const username = match.slice(1);
+    content = content.replace(
+      match,
+      getProfileLinkTag(username, `@${username}`)
+    );
+  });
+
+  return content;
 }
 
 export function renderPost(parent: HTMLElement, post: Post): HTMLDivElement {
   const postElement = document.createElement("div");
 
+  postElement.className = "post";
+
   renderProfilePicture(postElement, post.author.profile);
   postElement.appendChild(document.createElement("br"));
-  renderMention(postElement, post.author);
+  renderProfileLink(postElement, post.author.username);
 
   postElement.innerHTML += `
-    <p><a href="/post?id=${post.id}">${new Date(post.created_at).toLocaleString()}</a></p>
-    <p>${processPostContentMentions(post.content)}</p>
+    <p>${new Date(post.created_at).toLocaleString()}</p>
+    <h2><p>${processPostContentMentions(post.content)}</p></h2>
     `;
 
   if (post.author.username === getLoggedUsername()) {
-    const editButton = document.createElement("button");
-    editButton.textContent = "Edit";
-    editButton.onclick = () => {
-      window.location.href = `/post?id=${post.id}`;
-    };
-
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
     deleteButton.onclick = () => {
@@ -42,7 +53,7 @@ export function renderPost(parent: HTMLElement, post: Post): HTMLDivElement {
 export function renderPostForm(parent: HTMLElement): HTMLFormElement {
   const formElement = document.createElement("form");
   formElement.innerHTML = `
-    <textarea name="content"></textarea>
+    <textarea name="content" placeholder="What's on your mind?"></textarea>
     <button type="submit">Post</button>
   `;
   parent.appendChild(formElement);

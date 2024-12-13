@@ -18,13 +18,12 @@ export async function getFeed() {
   return feed;
 }
 
-export function getUserPosts(username: string) {
-  console.log(username)
-  return http.get<Post[]>("/posts").then((res) => res.body);
+export function getUserPosts(userId: number) {
+  return http.get<Post[]>(`/posts/user/${userId}`).then((res) => res.body);
 }
 
 export function updatePost(postId: number, post: Pick<Post, "content">) {
-  return http.put<Post>(`/posts/${postId}`, post).then((res) => res.body);
+  return http.patch<Post>(`/posts/${postId}`, post).then((res) => res.body);
 }
 
 export function createPost(post: Pick<Post, "content">) {

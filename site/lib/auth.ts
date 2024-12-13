@@ -22,10 +22,6 @@ export function logIn(username: string, password: string) {
     });
 }
 
-export function logOut(): void {
-  localStorage.removeItem("authToken");
-}
-
 export function register(email: string, username: string, password: string) {
   return http
     .post("/register", { email, username, password })
@@ -53,11 +49,11 @@ export function isLoggedIn(): boolean {
   return !!token;
 }
 
-export function logout() {
+export function logOut() {
   localStorage.removeItem("authToken");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("loggedUsername");
-  document.location.href = "/";
+  document.location.href = "/welcome";
 }
 
 export function makeForgotPasswordRequest() {

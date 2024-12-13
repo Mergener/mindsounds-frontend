@@ -1,4 +1,4 @@
-import { logout, refreshToken } from "./auth.js";
+import { logOut, refreshToken } from "./auth.js";
 import { environment } from "./environment.js";
 
 export class ApiError extends Error {
@@ -74,7 +74,7 @@ export class HTTP {
         return this.request(method, url, headers, body);
       } catch (err) {
         alert("Your session has expired. Please log in again.");
-        logout();
+        logOut();
       }
     }
 

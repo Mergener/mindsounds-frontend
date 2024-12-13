@@ -1,5 +1,6 @@
 import { createPost, getFeed } from "./lib/posts.js";
 import { renderFeed, renderPostForm } from "./components/posts.js";
+import { isLoggedIn } from "./lib/auth.js";
 
 async function refreshFeed() {
   const feed = await getFeed();
@@ -21,4 +22,8 @@ postForm.addEventListener("submit", async (e) => {
   await refreshFeed();
 });
 
-refreshFeed();
+if (isLoggedIn()) {
+  refreshFeed();
+} else {
+  location.href = "/welcome";
+}

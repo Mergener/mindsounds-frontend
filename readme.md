@@ -1,4 +1,5 @@
 # Mindsounds
+Parte do trabalho de G2 para a disciplina INF1407 da PUC-Rio.
 
 ## Descrição geral
 Este repositório contém o front-end para o projeto Mindsounds.

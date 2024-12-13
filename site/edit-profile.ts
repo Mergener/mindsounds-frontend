@@ -15,13 +15,12 @@ getProfileByIdOrUsername(profileId).then((profile) => {
 
   bioInput.value = profile.bio;
 
-  const editBioForm = document.getElementById("editBioForm") as HTMLFormElement;
-  editBioForm.addEventListener("click", async (e) => {
-    e.preventDefault();
+  const editBioButton = document.getElementById("updateBioButton") as HTMLButtonElement;
+  editBioButton.onclick = async () => {
     const bio = bioInput.value;
     await updateProfile(profile.id, { bio });
-    location.href = `/profile.html?id=${profile.id}`;
-  });
+    location.href = `/edit-profile.html?id=${profile.id}`;
+  };
 
   const editProfilePictureForm = document.getElementById(
     "editProfilePictureForm"
